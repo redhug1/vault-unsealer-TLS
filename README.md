@@ -49,16 +49,18 @@ _*Example Configuration*_
 
 ## TLS
 
-From where you run vault-unsealer-TLS, create a directory named `tls` and in it place files as:
+From where `vault-unsealer-TLS` is run, create a directory named `tls` and in it place files as:
 
 ```text
-.
-├── config.json
-├── tls
-│   ├── ca.crt
-│   ├── server.crt
-│   └── server.key
-└── vault-unsealer-TLS
+/mnt/S3andSQS/tmp/nomad
+                  ├── vaultUnsealTLS
+                  │   ├── config.json
+                  │   ├── tls
+                  │   │   ├── ca.crt
+                  │   │   ├── server.crt
+                  │   │   └── server.key
+                  │   └── vault-unsealer-TLS
+                  └── vault-unseal-tls.nomad
 ```
 
 I got the files in directory 'tls' from one of my 3 vault servers: vault-1, /etc/vault/tls
