@@ -35,9 +35,9 @@ _*Example Configuration*_
   "log_level": "debug",
   "probe_interval": 10,
   "nodes": [
-    "http://192.168.1.141:8200",
-    "http://192.168.1.142:8200",
-    "http://192.168.1.143:8200"
+    "https://192.168.1.141:8200",
+    "https://192.168.1.142:8200",
+    "https://192.168.1.143:8200"
   ],
   "unseal_keys": [
     "aa109356340az6f2916894c2e538f7450412056cea4c45b3dd4ae1f9c840befc1a",
