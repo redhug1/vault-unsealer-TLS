@@ -8,7 +8,6 @@ import (
 	"io"
 	"net/http"
 	"os"
-	"sync"
 	"time"
 
 	logger "github.com/sirupsen/logrus"
@@ -24,10 +23,8 @@ type UnsealRequest struct {
 	Key string `json:"key"`
 }
 
-var mu sync.Mutex // just in case one 'go' routine has not finished before another starts for the same vault server
-
 // Function to check and unseal a single Vault server
-func checkAndUnsealVault(server string, unsealKeys []string, logLevel string, sealed *bool) {
+func checkAndUnsealVault(server string, unsealKeys []string, sealed *bool) {
 
 	// load tls certificates
 	clientTLSCert, err := tls.LoadX509KeyPair("tls/server.crt", "tls/server.key")
@@ -75,9 +72,7 @@ func checkAndUnsealVault(server string, unsealKeys []string, logLevel string, se
 	}
 
 	if status.Sealed {
-		mu.Lock()
 		*sealed = true
-		mu.Unlock()
 		// report the following each time, as showing attempts is more comforting than only showing once for a state change
 		logger.Info(server, " is sealed. Attempting to unseal...")
 		for _, key := range unsealKeys {
@@ -112,26 +107,20 @@ func checkAndUnsealVault(server string, unsealKeys []string, logLevel string, se
 
 			if !status.Sealed {
 				logger.Info(server, " is now unsealed.")
-				mu.Lock()
 				*sealed = false // to ensure we only see this once for change of state from sealed
-				mu.Unlock()
 				break
 			}
 		}
 	} else {
-		mu.Lock()
 		s := *sealed
-		mu.Unlock()
-		if s == true {
+		if s {
 			logger.Info(server, " is already unsealed.")
-			mu.Lock()
 			*sealed = false // to ensure we only see this once for change of state from sealed
-			mu.Unlock()
 		}
 	}
 }
 
-func monitorAndUnsealVaults(servers []string, unsealKeys []string, probeInterval int, logLevel string) {
+func monitorAndUnsealVaults(servers []string, unsealKeys []string, probeInterval int) {
 
 	var sealed = make([]bool, len(servers)) // used to only report a vault server is 'unsealed' once (until it becomes sealed)
 
@@ -140,10 +129,24 @@ func monitorAndUnsealVaults(servers []string, unsealKeys []string, probeInterval
 	}
 
 	for {
+		anySealed := false
 		for i, server := range servers {
-			go checkAndUnsealVault(server, unsealKeys, logLevel, &sealed[i])
+			if sealed[i] {
+				anySealed = true
+				// run serially to minimise logs
+				checkAndUnsealVault(server, unsealKeys, &sealed[i])
+				time.Sleep(time.Duration(probeInterval) * time.Second)
+			}
 		}
+		if anySealed == false {
+			break
+		}
+	}
 
+	// !!! add call to code to run ansible to fix nomad and consul timed out tokens ...
+
+	for {
+		// keep job alive
 		time.Sleep(time.Duration(probeInterval) * time.Second)
 	}
 }

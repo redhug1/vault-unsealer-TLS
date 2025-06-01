@@ -41,5 +41,5 @@ func main() {
 
 	logger.Debug("Vault Unsealer starting...")
 
-	monitorAndUnsealVaults(cfg.Nodes, cfg.UnsealKeys, cfg.ProbeInterval, cfg.LogLevel)
+	monitorAndUnsealVaults(cfg.Nodes, cfg.UnsealKeys, cfg.ProbeInterval)
 }
