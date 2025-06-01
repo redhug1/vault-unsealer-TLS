@@ -13,6 +13,7 @@ _**NOTE: This is designed as a workflow Proof of Concept. Production use of Vaul
 I have a homelab running on an old Dell R630 which i turn off when not in use.
 
 In it i have a `run host` called `run3`, in which i run a single instance of nomad to deploy localstack for SQS and minio for S3 to provide services to a mini dev environment (a work in progress):
+
 ![run3 homelab](run3-homelab.PNG)
 
 This repo adds nomad job `vault-unseal-TLS` to `run3`'s nomad to unseal my vault cluster that is using TLS at power up.
