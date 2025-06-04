@@ -72,8 +72,8 @@ func main() {
 	// logger.Debug("Vault Unsealer starting ...")
 	// monitorAndUnsealVaults(cfg.Nodes, cfg.UnsealKeys, cfg.ProbeInterval)
 
-	logger.Debug("Fixing Tokens ...")
-	fixTokens(cfg.Nodes, cfg.VaultNomadServerToken, cfg.VaultToken)
+	logger.Debug("Check and if needs be - Fix Tokens ...")
+	fixTokens(cfg.Nodes, cfg.VaultNomadServerToken, cfg.VaultToken, cfg.VaultConsulConnectToken)
 
 	fmt.Println("\nIf testing command in build directory ... Do CTRL+C to stop ...")
 

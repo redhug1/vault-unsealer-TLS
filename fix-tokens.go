@@ -13,27 +13,21 @@ import (
 	logger "github.com/sirupsen/logrus"
 )
 
-func fixTokens(servers []string, vault_nomad_server_token string, vault_token string) {
+func fixTokens(servers []string, vault_nomad_server_token_id, vault_token, vault_consul_connect_token_id string) {
 	for _, server := range servers {
-		nomadToken(server, vault_nomad_server_token, vault_token)
-		break //!!! trash once above function call does all thats needed
+		fixToken("nomad-server", server, vault_nomad_server_token_id, vault_token)
 	}
 
 	// Generate consul connect vault token
-	/*
-		for _, server := range servers {
-			consulConnectToken(server, unsealKeys)
-			//   Check vault consul-connect token
-
-			//   Create vault consul-connect token
-		}
-	*/
+	for _, server := range servers {
+		fixToken("consul-connect", server, vault_consul_connect_token_id, vault_token)
+	}
 }
 
-// Generate nomad server vault token
-func nomadToken(server string, vault_nomad_server_token string, vault_token string) {
+// Generate NNN vault token
+func fixToken(token, server, vault_token_id, vault_token string) {
 
-	logger.Info(server, " - checking nomad token ...")
+	logger.Info(server, " - checking token: "+token)
 
 	// load tls certificates
 	clientTLSCert, err := tls.LoadX509KeyPair("tls/server.crt", "tls/server.key")
@@ -61,8 +55,8 @@ func nomadToken(server string, vault_nomad_server_token string, vault_token stri
 		},
 	}
 
-	// Check vault nomad-server [ derived from same section name in ansible code by running it with -vvv ]
-	postBody := "{\"token\":\"" + vault_nomad_server_token + "\"}"
+	// Check vault NNN token [ derived from same section name in ansible code by running it with -vvv ]
+	postBody := "{\"token\":\"" + vault_token_id + "\"}"
 	jsonStr := []byte(postBody)
 	req, err := http.NewRequest("POST", server+"/v1/auth/token/lookup", bytes.NewBuffer(jsonStr))
 	if err != nil {
@@ -96,16 +90,16 @@ func nomadToken(server string, vault_nomad_server_token string, vault_token stri
 	fmt.Println(prettyJSON.String())
 
 	if resp.Status == "200 OK" {
-		logger.Info(server, " - nomad token ... is OK")
+		logger.Info(server, " - token OK: "+token)
 		return
 	}
 
-	logger.Info(server, " - nomad token ... is NOT OK")
+	logger.Info(server, " - token is NOT OK: "+token)
 
-	// Create vault nomad-server [ derived from same section name in ansible code by running it with -vvv ]
-	logger.Info(server, " - nomad token ... Creating ...")
+	// Create vault NNN token [ derived from same section name in ansible code by running it with -vvv ]
+	logger.Info(server, " - token Creating: "+token)
 
-	postBody = "{\"id\":\"" + vault_nomad_server_token + "\",\"period\":\"10m\",\"policies\":[\"nomad-server\"]}"
+	postBody = "{\"id\":\"" + vault_token_id + "\",\"period\":\"10m\",\"policies\":[\"" + token + "\"]}"
 	jsonStr = []byte(postBody)
 	req, err = http.NewRequest("POST", server+"/v1/auth/token/create-orphan", bytes.NewBuffer(jsonStr))
 	if err != nil {
@@ -140,8 +134,8 @@ func nomadToken(server string, vault_nomad_server_token string, vault_token stri
 	fmt.Println("response Status:", resp.Status)
 
 	if resp.Status == "200 OK" {
-		logger.Info(server, " - nomad token ... Created OK")
+		logger.Info(server, " - token Created OK: "+token)
 		return
 	}
-	logger.Error(server, " - nomad token ... Creation Failed ... invetigate and FIX !!!")
+	logger.Error(server, " - token ... Creation Failed ... invetigate and FIX !!!: "+token)
 }

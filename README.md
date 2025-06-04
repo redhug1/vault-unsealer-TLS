@@ -30,8 +30,9 @@ Vault Unsealer TLS takes a `.json` configuration file with the following configu
 - `probe_interval` _(type: int, required: true)_ - This specifies the frequency of the Vault seal status probe check in seconds.
 - `nodes` _(type: []string, required: true)_ - This is a list of Vault server nodes that Vault Unsealer TLS will manage the seal status of.
 - `unseal_keys` _(type: []string, required: true)_ - A list of Vault unseal keys that can be used to unseal Vault. The number of keys in this list should be equal to or greater than the unseal threshold required for your Vault cluster.
-- `vault_nomad_server_token` _(type: string, required: true)_ - Extracted from ansible secrets (!!! add ansible command to get it).
+- `vault_nomad_server_token_id` _(type: string, required: true)_ - Extracted from ansible secrets (!!! add ansible command to get it).
 - `vault_token` _(type: string, required: true)_ - Extracted from ansible secrets (!!! add ansible command to get it).
+- `vault_consul_connect_token_id` _(type: string, required: true)_ - Extracted from ansible secrets (!!! add ansible command to get it).
 
 _*Example Configuration (with adulterated secrets)*_
 
@@ -49,8 +50,9 @@ _*Example Configuration (with adulterated secrets)*_
     "4948bcfe36834c8e6861f8144672cb804610967c7afb0588cfd03217b4354a8c35",
     "7b5802f21b19s522444e2723a31cb07d5a3de60fbc37d21f918f998018b6e7ce8b"
   ],
-  "vault_nomad_server_token": "C48CE962-D301-4296-855C-78CD5B112345",
-  "vault_token": "s.rtdeEHzBOGAYngSLS1112345"
+  "vault_nomad_server_token_id": "C48CE962-D301-4296-855C-78CD5B112345",
+  "vault_token": "s.rtdeEHzBOGAYngSLS1112345",
+  "vault_consul_connect_token_id": "B36D3A34-8053-46A5-8B04-76643BB12345"
 }
 ```
 
