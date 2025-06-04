@@ -2,6 +2,8 @@
 
 A tool to implement auto-unsealing of HashiCorp Vault nodes that use TLS.
 
+After unsealing vault it also refresh's any timed out tokens.
+
 This was derived from: https://github.com/devops-rob/vault-unsealer
 
 The article for the original code: https://www.hashicorp.com/blog/running-vault-on-nomad-part-3
@@ -28,8 +30,10 @@ Vault Unsealer TLS takes a `.json` configuration file with the following configu
 - `probe_interval` _(type: int, required: true)_ - This specifies the frequency of the Vault seal status probe check in seconds.
 - `nodes` _(type: []string, required: true)_ - This is a list of Vault server nodes that Vault Unsealer TLS will manage the seal status of.
 - `unseal_keys` _(type: []string, required: true)_ - A list of Vault unseal keys that can be used to unseal Vault. The number of keys in this list should be equal to or greater than the unseal threshold required for your Vault cluster.
+- `vault_nomad_server_token` _(type: string, required: true)_ - Extracted from ansible secrets (!!! add ansible command to get it).
+- `vault_token` _(type: string, required: true)_ - Extracted from ansible secrets (!!! add ansible command to get it).
 
-_*Example Configuration*_
+_*Example Configuration (with adulterated secrets)*_
 
 ```json
 {
@@ -44,7 +48,9 @@ _*Example Configuration*_
     "aa109356340az6f2916894c2e538f7450412056cea4c45b3dd4ae1f9c840befc1a",
     "4948bcfe36834c8e6861f8144672cb804610967c7afb0588cfd03217b4354a8c35",
     "7b5802f21b19s522444e2723a31cb07d5a3de60fbc37d21f918f998018b6e7ce8b"
-  ]
+  ],
+  "vault_nomad_server_token": "C48CE962-D301-4296-855C-78CD5B112345",
+  "vault_token": "s.rtdeEHzBOGAYngSLS1112345"
 }
 ```
 
@@ -60,7 +66,7 @@ From where `vault-unsealer-TLS` is run, create a directory named `tls` and in it
                   │   │   ├── ca.crt
                   │   │   ├── server.crt
                   │   │   └── server.key
-                  │   └── vault-unsealer-TLS
+                  │   └── vault-unsealer-TLS              << ensure this is executable
                   └── vault-unseal-tls.nomad
 ```
 
@@ -75,7 +81,7 @@ TODO need to check if the files in the tls directory change over the coming mont
 Build the binary (ensure static linking for libc) with:
 
 ```shell
-CGO_ENABLED=0 GOOS=linux go build -ldflags '-extldflags "-static"' -o vault-unsealer-TLS
+make static
 ```
 
 and copy `vault-unsealer-TLS` into:

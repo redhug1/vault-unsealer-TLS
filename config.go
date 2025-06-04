@@ -2,16 +2,19 @@ package main
 
 import (
 	"flag"
+	"strings"
+
 	logger "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
-	"strings"
 )
 
 type Config struct {
-	LogLevel      string   `json:"log_level"`
-	Nodes         []string `json:"nodes"`
-	ProbeInterval int      `json:"probe_interval"`
-	UnsealKeys    []string `json:"unseal_keys"`
+	LogLevel              string   `json:"log_level"`
+	Nodes                 []string `json:"nodes"`
+	ProbeInterval         int      `json:"probe_interval"`
+	UnsealKeys            []string `json:"unseal_keys"`
+	VaultNomadServerToken string   `json:"vault_nomad_server_token"`
+	VaultToken            string   `json:"vault_token"`
 }
 
 var configFilePath = flag.String("config-file-path", ".", "The path where config.json file to use with vault-unsealer is located")
@@ -44,9 +47,11 @@ func newConfig() *Config {
 	}
 
 	return &Config{
-		LogLevel:      config.GetString("log_level"),
-		Nodes:         config.GetStringSlice("nodes"),
-		ProbeInterval: config.GetInt("probe_interval"),
-		UnsealKeys:    config.GetStringSlice("unseal_keys"),
+		LogLevel:              config.GetString("log_level"),
+		Nodes:                 config.GetStringSlice("nodes"),
+		ProbeInterval:         config.GetInt("probe_interval"),
+		UnsealKeys:            config.GetStringSlice("unseal_keys"),
+		VaultNomadServerToken: config.GetString("vault_nomad_server_token"),
+		VaultToken:            config.GetString("vault_token"),
 	}
 }

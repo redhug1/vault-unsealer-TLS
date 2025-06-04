@@ -135,18 +135,14 @@ func monitorAndUnsealVaults(servers []string, unsealKeys []string, probeInterval
 				anySealed = true
 				// run serially to minimise logs
 				checkAndUnsealVault(server, unsealKeys, &sealed[i])
-				time.Sleep(time.Duration(probeInterval) * time.Second)
+				if sealed[i] {
+					// its still sealed, so do specified delay
+					time.Sleep(time.Duration(probeInterval) * time.Second)
+				}
 			}
 		}
 		if anySealed == false {
 			break
 		}
-	}
-
-	// !!! add call to code to run ansible to fix nomad and consul timed out tokens ...
-
-	for {
-		// keep job alive
-		time.Sleep(time.Duration(probeInterval) * time.Second)
 	}
 }
