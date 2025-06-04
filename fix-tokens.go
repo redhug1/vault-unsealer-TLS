@@ -80,7 +80,6 @@ func fixToken(token, server, vault_token_id, vault_token string) {
 	}
 
 	// show response in formatted JSON
-	//!!! comment out showing the response once code working - beacuse its showing sensitive values
 	var prettyJSON bytes.Buffer
 	err = json.Indent(&prettyJSON, body, "", "  ")
 	if err != nil {
@@ -123,7 +122,6 @@ func fixToken(token, server, vault_token_id, vault_token string) {
 	}
 
 	// show response in formatted JSON
-	//!!! comment out showing the response once code working - beacuse its showing sensitive values
 	err = json.Indent(&prettyJSON, body, "", "  ")
 	if err != nil {
 		logger.Error("Error parsing JSON body 2:", err)
