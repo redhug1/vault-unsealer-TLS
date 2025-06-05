@@ -61,7 +61,7 @@ job "vault-unseal-tls" {
         # NOTE: the following starts with a 12 second delay to ensure nomad sees this task
         #       as alive for >=min_healthy_time
         #       otherwise it might think the task is dead and not run it as desired.
-        args         = ["-c", "sleep 12;apk --update --no-cache --quiet add bash jq aws-cli;ls v2;cd v2;./vault-unsealer-TLS;"]
+        args         = ["-c", "sleep 14;apk --update --no-cache add bash;ls v2;cd v2;./vault-unsealer-TLS;"]
         network_mode = "host"
       }
 

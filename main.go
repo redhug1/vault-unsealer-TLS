@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"strconv"
 	"strings"
 	"syscall"
 	"time"
@@ -22,7 +23,14 @@ var (
 
 func main() {
 
-	fmt.Println("BuildTime: " + BuildTime)
+	i, err := strconv.ParseInt(BuildTime, 10, 64)
+	if err == nil {
+		tm := time.Unix(i, 0)
+		fmt.Printf("Buildtime: ")
+		fmt.Println(tm)
+	} else {
+		fmt.Println("BuildTime: " + BuildTime)
+	}
 	fmt.Println("GitCommit: " + GitCommit)
 	fmt.Println("Version: " + Version)
 
@@ -69,10 +77,10 @@ func main() {
 		logger.Fatal("unseal keys not specified")
 	}
 
-	// logger.Debug("Vault Unsealer starting ...")
-	// monitorAndUnsealVaults(cfg.Nodes, cfg.UnsealKeys, cfg.ProbeInterval)
+	logger.Debug("Vault Unsealer starting ...")
+	monitorAndUnsealVaults(cfg.Nodes, cfg.UnsealKeys, cfg.ProbeInterval)
 
-	logger.Debug("Check and if needs be - Fix Tokens ...")
+	logger.Info("Check and if needs be - Fixing Tokens ...")
 	fixTokens(cfg.Nodes, cfg.VaultNomadServerToken, cfg.VaultToken, cfg.VaultConsulConnectToken)
 
 	fmt.Println("\nIf testing command in build directory ... Do CTRL+C to stop ...")

@@ -25,9 +25,9 @@ func fixTokens(servers []string, vault_nomad_server_token_id, vault_token, vault
 }
 
 // Generate NNN vault token
-func fixToken(token, server, vault_token_id, vault_token string) {
+func fixToken(token_name, server, vault_token_id, vault_token string) {
 
-	logger.Info(server, " - checking token: "+token)
+	logger.Info(server, " - checking token: "+token_name)
 
 	// load tls certificates
 	clientTLSCert, err := tls.LoadX509KeyPair("tls/server.crt", "tls/server.key")
@@ -80,6 +80,7 @@ func fixToken(token, server, vault_token_id, vault_token string) {
 	}
 
 	// show response in formatted JSON
+	fmt.Println("Response from token lookup: " + token_name + " on server: " + server)
 	var prettyJSON bytes.Buffer
 	err = json.Indent(&prettyJSON, body, "", "  ")
 	if err != nil {
@@ -89,16 +90,16 @@ func fixToken(token, server, vault_token_id, vault_token string) {
 	fmt.Println(prettyJSON.String())
 
 	if resp.Status == "200 OK" {
-		logger.Info(server, " - token OK: "+token)
+		logger.Info(server, " - token OK: "+token_name)
 		return
 	}
 
-	logger.Info(server, " - token is NOT OK: "+token)
+	logger.Info(server, " - token is NOT OK: "+token_name)
 
 	// Create vault NNN token [ derived from same section name in ansible code by running it with -vvv ]
-	logger.Info(server, " - token Creating: "+token)
+	logger.Info(server, " - token Creating: "+token_name)
 
-	postBody = "{\"id\":\"" + vault_token_id + "\",\"period\":\"10m\",\"policies\":[\"" + token + "\"]}"
+	postBody = "{\"id\":\"" + vault_token_id + "\",\"period\":\"10m\",\"policies\":[\"" + token_name + "\"]}"
 	jsonStr = []byte(postBody)
 	req, err = http.NewRequest("POST", server+"/v1/auth/token/create-orphan", bytes.NewBuffer(jsonStr))
 	if err != nil {
@@ -122,6 +123,8 @@ func fixToken(token, server, vault_token_id, vault_token string) {
 	}
 
 	// show response in formatted JSON
+	fmt.Println("Response from token creation: " + token_name + " on server: " + server)
+
 	err = json.Indent(&prettyJSON, body, "", "  ")
 	if err != nil {
 		logger.Error("Error parsing JSON body 2:", err)
@@ -132,8 +135,8 @@ func fixToken(token, server, vault_token_id, vault_token string) {
 	fmt.Println("response Status:", resp.Status)
 
 	if resp.Status == "200 OK" {
-		logger.Info(server, " - token Created OK: "+token)
+		logger.Info(server, " - token Created OK: "+token_name)
 		return
 	}
-	logger.Error(server, " - token ... Creation Failed ... invetigate and FIX !!!: "+token)
+	logger.Error(server, " - token ... Creation Failed ... invetigate and FIX !!: "+token_name)
 }

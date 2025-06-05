@@ -13,9 +13,9 @@ type Config struct {
 	Nodes                   []string `json:"nodes"`
 	ProbeInterval           int      `json:"probe_interval"`
 	UnsealKeys              []string `json:"unseal_keys"`
-	VaultNomadServerToken   string   `json:"vault_nomad_server_token_id"`
-	VaultToken              string   `json:"vault_token"`
-	VaultConsulConnectToken string   `json:"vault_consul_connect_token_id"`
+	VaultNomadServerToken   string   `json:"vault_nomad_server_token_id"`   // is 'nomad_vault_token' decrypted from 'inventories/develop/group_vars/all'
+	VaultToken              string   `json:"vault_token"`                   // is 'vault_token' decrypted from 'inventories/develop/group_vars/all'
+	VaultConsulConnectToken string   `json:"vault_consul_connect_token_id"` // is 'consul_connect_vault_token' decrypted from 'inventories/develop/group_vars/all'
 }
 
 var configFilePath = flag.String("config-file-path", ".", "The path where config.json file to use with vault-unsealer is located")

@@ -30,9 +30,9 @@ Vault Unsealer TLS takes a `.json` configuration file with the following configu
 - `probe_interval` _(type: int, required: true)_ - This specifies the frequency of the Vault seal status probe check in seconds.
 - `nodes` _(type: []string, required: true)_ - This is a list of Vault server nodes that Vault Unsealer TLS will manage the seal status of.
 - `unseal_keys` _(type: []string, required: true)_ - A list of Vault unseal keys that can be used to unseal Vault. The number of keys in this list should be equal to or greater than the unseal threshold required for your Vault cluster.
-- `vault_nomad_server_token_id` _(type: string, required: true)_ - Extracted from ansible secrets (!!! add ansible command to get it).
-- `vault_token` _(type: string, required: true)_ - Extracted from ansible secrets (!!! add ansible command to get it).
-- `vault_consul_connect_token_id` _(type: string, required: true)_ - Extracted from ansible secrets (!!! add ansible command to get it).
+- `vault_nomad_server_token_id` _(type: string, required: true)_ - Extracted from ansible secrets (see config.go).
+- `vault_token` _(type: string, required: true)_ - Extracted from ansible secrets (see config.go).
+- `vault_consul_connect_token_id` _(type: string, required: true)_ - Extracted from ansible secrets (see config.go).
 
 _*Example Configuration (with adulterated secrets)*_
 
@@ -86,7 +86,7 @@ Build the binary (ensure static linking for libc) with:
 make static
 ```
 
-and copy `vault-unsealer-TLS` into:
+and copy `vault-unsealer-TLS` into (you may need to first delete `vault-unsealer-TLS` from the target directory):
 
 ```text
 /mnt/S3andSQS/tmp/nomad/vaultUnsealTLS
